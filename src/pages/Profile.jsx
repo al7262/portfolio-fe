@@ -7,6 +7,7 @@ import { actions } from "../store/store";
 import Header from '../components/Header'; 
 import Footer from '../components/Footer'; 
 import ProfileDetail from '../components/ProfileDetail'; 
+import AddressDetail from '../components/AddressDetail';
 
 class Profile extends React.Component{
     state = {
@@ -96,9 +97,10 @@ class Profile extends React.Component{
                 if(Array.isArray(data)){
                     dataToShow = data.map((item, key)=>{
                         return(
-                            <ProfileDetail
+                            <AddressDetail
                                 key={key}
                                 index={key}
+                                id={item.id}
                                 contact={item.contact}
                                 details={item.details}
                                 city={item.city}
@@ -142,7 +144,17 @@ class Profile extends React.Component{
                             {dataToShow}
                         </div>
                     </div>
-                    <div className="row col-md-12 gap-50"></div>
+                    <div className="row col-md-12 gap-50">
+                        {this.state.position==='address'?
+                        <div className="manage-add-btn">
+                            <Link className="btn-add" to={"/user/"+this.state.position+"/add"}>
+                                <i className="material-icons">add_circle</i>
+                            </Link>
+                        </div>
+                        :
+                        null
+                        }
+                    </div>
                 </div>
                 <Footer />
             </React.Fragment>

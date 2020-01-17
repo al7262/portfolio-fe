@@ -39,21 +39,8 @@ class ProductDetails extends React.Component{
         this.setState({ [event.target.name] : event.target.value })
     }
 
-    addToCart = async (data) => {
-        if(await this.state.qty>data.stock){
-            await this.setState({qty:data.stock})
-        }
-        const dict = {
-            product_id: data.id,
-            qty: await parseInt(this.state.qty)
-        }
-        const cart = localStorage.getItem('cart')===null? [] : JSON.parse(localStorage.getItem('cart'))
-        console.log(cart)
-        cart.push(dict);
-        localStorage.setItem('cart', JSON.stringify(cart))
-    }
-
     render(){
+        console.log(this.props)
         const data = this.props.data
         return(
             <React.Fragment>

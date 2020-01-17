@@ -5,25 +5,25 @@ import { actions } from "../store/store";
 
 import Header from '../components/Header'; 
 import Footer from '../components/Footer'; 
+import CategoryForm from '../components/CategoryForm';
 
 class ProductDetails extends React.Component{
     state = {
         isLoading: true,
-        qty: 1
+        qty: 1,
+        category: ''
     }
 
     componentDidMount = async () => {
-        this.props.checkLoginStatus()
-        this.props.getCategory()
-        const index = this.props.match.params.index
-        const input = {
-            method: "get",
-            url: "http://0.0.0.0:5000/product/list",
-            headers: {
-                "Content-Type": "application/json"
-            }
+        await this.props.checkLoginStatus()
+        await this.props.getCategory()
+        console.log(this.props)
+        const action = await this.props.match.params.action.toLowerCase()
+        if(action==='category'){
+            await this.getItemByCategory()
+        } else if(action==='search'){
+            await this.getItemBySearch()
         }
-        await this.props.handleApi(input)
         const data = this.props.data
         if(data!==undefined){
             this.setState({isLoading: false})
@@ -39,30 +39,87 @@ class ProductDetails extends React.Component{
         this.setState({ [event.target.name] : event.target.value })
     }
 
-    addToCart = async (data) => {
-        if(await this.state.qty>data.stock){
-            await this.setState({qty:data.stock})
+    handleCategory = async (category) => {
+        this.setState({category:category.toLowerCase()});
+        this.props.history.push('/item/category/'+category.replace(' ','+').toLowerCase())
+        await this.getItemByCategory()
+    }
+
+    getCategoryID = (category) => {
+        let id;
+        const categoryList = this.props.categoryList
+        if(Array.isArray(categoryList)){
+            for(const item in categoryList){
+                if(categoryList[item].name.toLowerCase()===category){
+                    id=categoryList[item].id
+                }
+            }
         }
-        const dict = {
-            product_id: data.id,
-            qty: await parseInt(this.state.qty)
+        return id
+    }
+
+    getItemByCategory = async() =>{
+        const category = await this.props.match.params.input.replace('+', ' ')
+        this.setState({category:category})
+        const categoryId = await this.getCategoryID(category);
+        console.log(categoryId)
+        const input = {
+            method: "get",
+            url: "http://0.0.0.0:5000/product/list",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            params: {
+                category_id: categoryId
+            },
         }
-        const cart = localStorage.getItem('cart')===null? [] : JSON.parse(localStorage.getItem('cart'))
-        console.log(cart)
-        cart.push(dict);
-        localStorage.setItem('cart', JSON.stringify(cart))
+        await this.props.handleApi(input)
+    }
+
+    getItemBySearch = async() =>{
+        const search = await this.props.search
+        const input = {
+            method: "get",
+            url: "http://0.0.0.0:5000/product/list",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            params: {
+                name: search
+            },
+        }
+        await this.props.handleApi(input)
     }
 
     render(){
         const data = this.props.data
+        const action = this.props.match.params.action
+        let input;
+        if(action==='category'){
+            input = this.props.match.params.input.replace('+', ' ')
+        }
         return(
             <React.Fragment>
                 <Header />
                 <div className="container">
                     <div className="row col-12 product-title mt-5">
-                        <h1>{data.name}</h1>
+                        <h1 className="text-capitalize">{action}: {action==='category'? input : this.props.search}</h1>
                     </div>
                     <hr/>
+                    <div className="row">
+                        <div className="col-md-3 side-bar vl-manage mb-2">
+                            <div class="list-group list-group-flush">
+                                {Array.isArray(this.props.categoryList)?
+                                this.props.categoryList.map((item)=>(
+                                <Link class={"list-group-item list-group-item-action "+(input===item.name.toLowerCase()? 'active':'')}
+                                onClick={()=>this.handleCategory(item.name)}>
+                                    {item.name}</Link>
+                                ))
+                                : null
+                                }
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <Footer />
             </React.Fragment>
@@ -70,4 +127,4 @@ class ProductDetails extends React.Component{
     }
 }
 
-export default connect('data',actions)(withRouter(ProductDetails))
+export default connect('data, categoryList, search',actions)(withRouter(ProductDetails))

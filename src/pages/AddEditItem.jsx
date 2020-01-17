@@ -1,4 +1,5 @@
 import React from 'react';
+import swal from 'sweetalert2';
 import { withRouter, Link } from "react-router-dom";
 import { connect } from "unistore/react";
 import { actions } from "../store/store";
@@ -67,7 +68,8 @@ class AdminAddEdit extends React.Component{
 
     getItem = async (value) => {
         const index = this.props.match.params.index
-        value = value==='detail'||value==='address'? "user/"+value : value+"/"+index
+        console.log(this.props)
+        value = value==='detail'||value==='address'? value==='detail'? "user/"+value :"user/"+value+"/"+index : value+"/"+index
         const input = {
             method: 'get',
             headers: {
@@ -86,8 +88,8 @@ class AdminAddEdit extends React.Component{
         const action = this.props.match.params.action
         const warning = document.getElementById('warning')
         const regNum = new RegExp(/^\d+$/)
-        const regPhone = new RegExp(/([+]?\d{1,2}[.-\s]?)?(\d{3}[.-]?){2}\d{4}/)
-        const regZipCode = new RegExp(/\d{5}/)
+        const regPhone = new RegExp(/^[+]\d{9-16}/)
+        const regZipCode = new RegExp(/^\d{6}/)
         let data;
         if(position==='category'){
             if(this.state.name===''){
@@ -106,8 +108,6 @@ class AdminAddEdit extends React.Component{
                 warning.innerHTML='Please fill in the price'
             } else if(this.state.stock===''){
                 warning.innerHTML='Please fill in the stock'
-            } else if(this.state.price.match(regNum)){
-                warning.innerHTML='Please fill price with numbers'
             } else {
                 data = {
                     name: this.state.name,
@@ -188,10 +188,15 @@ class AdminAddEdit extends React.Component{
         }
         await this.props.handleApi(input);
         if(await this.props.data.hasOwnProperty('id')){
-            alert('You have successfully add item!')
+            swal.fire({
+                title: 'Done!',
+                text: 'You have successfully input the item',
+                icon: 'success',
+                confirmButtonText: 'okay'
+              })
             if(position==='category'||position==='product'){
                 this.props.history.push('/manage')
-            } else{
+            } else {
                 this.props.history.push('/user')
             }
         }
@@ -216,7 +221,12 @@ class AdminAddEdit extends React.Component{
         }
         await this.props.handleApi(input);
         if(await this.props.data.hasOwnProperty('id')){
-            alert('You have successfully edit item!')
+            swal.fire({
+                title: 'Done!',
+                text: 'You have successfully update the item',
+                icon: 'success',
+                confirmButtonText: 'okay'
+              })
             if(position==='category'||position==='product'){
                 this.props.history.push('/manage')
             } else{

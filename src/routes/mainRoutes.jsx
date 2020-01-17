@@ -13,6 +13,7 @@ import ProductDetails from '../pages/ProductDetails';
 import Manage from '../pages/Manage';
 import AdminAddEdit from '../pages/AddEditItem';
 import Profile from '../pages/Profile';
+import ProductList from '../pages/ProductList';
 
 
 const Mainroute = () => {
@@ -31,7 +32,9 @@ const Mainroute = () => {
                     <Route exact path="/user/:option" component={Profile}/>
                     <Route exact path="/user/:option/:action" component={AdminAddEdit}/>
                     <Route exact path="/user/:option/:action/:index" component={AdminAddEdit}/>
-                    <Route exact path="/item/:index" component={ProductDetails}/>
+                    <Route exact path="/item/detail/:index" component={ProductDetails}/>
+                    <Route exact path="/item/:action" component={ProductList}/>
+                    <Route exact path="/item/:action/:input" component={ProductList}/>
                     <Route component={NotMatch}/>
                 </Switch>
             </BrowserRouter>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom'
 
-class Product extends React.Component{
+class ProductList extends React.Component{
     render(){
         return(
             <React.Fragment>
@@ -11,4 +11,4 @@ class Product extends React.Component{
     };
 }
 
-export default Product
+export default ProductList

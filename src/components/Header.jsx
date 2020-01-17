@@ -22,9 +22,9 @@ class Header extends React.Component{
                         <input className="form-control w-80" type="search" 
                         placeholder="Search" name="search" value={this.props.search}
                         onChange={e=>this.props.handleInput(e)}/>
-                        <button className="btn btn-outline-custom pb-0 h-100 w-20" type="submit">
+                        <Link className="btn btn-outline-custom pb-0 h-100 w-20" type="submit" to="/item/search">
                             <i className="material-icons">search</i>
-                        </button>
+                        </Link>
                     </form>
 
                     <ul className="navbar-nav ml-auto mt-2 mt-lg-0">
@@ -40,7 +40,7 @@ class Header extends React.Component{
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="categoryDropdown">
                                 {Array.isArray(this.props.categoryList)?
                                 this.props.categoryList.map((item)=>(
-                                    <Link class="dropdown-item" to="#">{item.name}</Link>
+                                    <Link class="dropdown-item" to={"/item/category/"+item.name.replace(' ','+').toLowerCase()}>{item.name}</Link>
                                     ))
                                 :
                                 null

@@ -122,6 +122,8 @@ body{
     border: 1px solid @brown-light4;
     color: @brown-light4;
     background-color: @brown-dark3;
+    padding: 0.375em 0;
+    height: 100%;
     &:hover{
         background-color: @brown-light4;
         color: @brown-dark3;
@@ -727,6 +729,50 @@ select{
             th{
                 width: 30%;
                 max-width: 100px;
+            }
+        }
+    }
+}
+
+.address-box{
+    border: 1px solid @red-dark4;
+    padding: 20px;
+    .address-detail{
+        p{
+            padding: 0;
+            margin: 0;
+        }
+    }
+    .address-btn{
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        .btn-edit{
+            width: 40%;
+            height: 40px;
+            border-radius: 0;
+            background-color: @brown-dark1;
+            border: 1px solid @brown-dark2;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            &:hover{
+                background-color: @brown-dark2;
+            }
+        }
+        .btn-del{
+            width: 40%;
+            border-radius: 0;
+            height: 40px;
+            background-color: @red-dark1;
+            border: 1px solid @red-dark2;
+            padding: 5px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            &:hover{
+                background-color: @red-dark2;
             }
         }
     }

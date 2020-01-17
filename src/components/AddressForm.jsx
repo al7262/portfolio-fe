@@ -8,7 +8,7 @@ const AddressForm = (props) =>{
             <input name="city" type="text" placeholder="City Name" onChange={e => props.handleInput(e)} value={props.city}/>
             <input name="province" type="text" placeholder="Province Name" onChange={e => props.handleInput(e)} value={props.province}/>
             <input name="country" type="text" placeholder="Country Name" onChange={e => props.handleInput(e)} value={props.country}/>
-            <input name="zipcode" type="text" placeholder="Zipcode" onChange={e => props.handleInput(e)} value={props.zipcode}/>
+            <input name="zipcode" maxLength="5" type="text" placeholder="Zipcode" onChange={e => props.handleInput(e)} value={props.zipcode}/>
         </React.Fragment>
     );
 };

@@ -87,6 +87,8 @@ body p {
   border: 1px solid #edd8c4;
   color: #edd8c4;
   background-color: #3c2111;
+  padding: 0.375em 0;
+  height: 100%;
 }
 .btn-outline-custom:hover {
   background-color: #edd8c4;
@@ -603,6 +605,47 @@ select:focus {
 .profile-detail .detail-box table th {
   width: 30%;
   max-width: 100px;
+}
+.address-box {
+  border: 1px solid #160703;
+  padding: 20px;
+}
+.address-box .address-detail p {
+  padding: 0;
+  margin: 0;
+}
+.address-box .address-btn {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.address-box .address-btn .btn-edit {
+  width: 40%;
+  height: 40px;
+  border-radius: 0;
+  background-color: #8c4c27;
+  border: 1px solid #64361c;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.address-box .address-btn .btn-edit:hover {
+  background-color: #64361c;
+}
+.address-box .address-btn .btn-del {
+  width: 40%;
+  border-radius: 0;
+  height: 40px;
+  background-color: #9a3018;
+  border: 1px solid #6e2311;
+  padding: 5px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.address-box .address-btn .btn-del:hover {
+  background-color: #6e2311;
 }
 @media (max-width: 1025px) {
   .newest-product-item .newest-product-name {

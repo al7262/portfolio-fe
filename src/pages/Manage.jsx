@@ -92,8 +92,7 @@ class Manage extends React.Component{
                             <div class="list-group list-group-flush">
                                 <Link to="#" class={"list-group-item list-group-item-action "+
                                 (this.state.position==='dashboard'? 'active':'')} onClick={()=>this.handlePosition('dashboard')}>
-                                    Dashboard
-                                    </Link>
+                                    Dashboard</Link>
                                 <Link to="#" class={"list-group-item list-group-item-action "+
                                 (this.state.position==='product'? 'active':'')} onClick={()=>this.handlePosition('product')}>
                                     Product</Link>
