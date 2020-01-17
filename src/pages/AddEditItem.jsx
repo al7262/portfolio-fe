@@ -87,7 +87,6 @@ class AdminAddEdit extends React.Component{
         const position = this.props.match.params.option
         const action = this.props.match.params.action
         const warning = document.getElementById('warning')
-        const regNum = new RegExp(/^\d+$/)
         const regPhone = new RegExp(/^[+]\d{9-16}/)
         const regZipCode = new RegExp(/^\d{6}/)
         let data;
