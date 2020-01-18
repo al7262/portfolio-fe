@@ -5,41 +5,44 @@ import { actions } from "../store/store";
 
 import Header from '../components/Header'; 
 import Footer from '../components/Footer';
-import CartList from '../components/CartList';
 
-class Cart extends React.Component{
+class CheckOut extends React.Component{
+    state = {
+        order: '',
+    }
+
     componentDidMount = async () => {
         await this.props.checkLoginStatus();
         await this.props.getCategory();
-        console.log(JSON.parse(localStorage.getItem('cart')))
+    }
+
+    postOrder = async() =>{
+        const claims=this.props.claims
+        const input = {
+            method: "post",
+            url: await this.props.baseUrl+"Order",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            data: {
+                username: this.state.username.toLowerCase(),
+                password: this.state.password,
+                email: this.state.email
+            },
+            validateStatus: (status) => {
+                return status<500
+            }
+        };
     }
 
     render(){
-        const cart = JSON.parse(localStorage.getItem('cart'));
-        let dataToShow;
-        if(Array.isArray(cart)&&cart.length>0){
-            console.log('inside if')
-            dataToShow = cart.map((item,key)=>{
-                return(
-                    <CartList
-                        key={key}
-                        index={key}
-                        name={item.data.name}
-                        image={item.data.image}
-                        price={item.data.price}
-                        qty={item.qty}
-                        deleteFromCart={this.props.deleteFromCart}/>
-                )
-            })
-        } else {
-            dataToShow = <div className="row col-md-12 nothing-in-cart"><h1>There is nothing in Cart.</h1></div>
-        }
+        
         return(
             <React.Fragment>
                 <Header />
                 <div className="container">
                     <div className="row col-12 product-title mt-5">
-                        <h1>Shopping Cart</h1>
+                        <h1>Shopping CheckOut</h1>
                     </div>
                     <hr/>
                     <div className="row">
@@ -50,7 +53,7 @@ class Cart extends React.Component{
                             </div>
                             <div className="row col-md-12 justify-content-center">
                                 <div className="cart-button">
-                                    <Link className="btn btn-danger btn-clear" onClick={()=>localStorage.removeItem('cart')}>Clear Cart</Link>
+                                    <Link className="btn btn-danger btn-clear" onClick={()=>localStorage.removeItem('cart')}>Clear CheckOut</Link>
                                     <Link className="btn btn-danger btn-checkout">Check Out</Link>
                                 </div>
                             </div>
@@ -64,4 +67,4 @@ class Cart extends React.Component{
     }
 }
 
-export default connect('categoryList', actions)(withRouter(Cart))
+export default connect('categoryList', actions)(withRouter(CheckOut))

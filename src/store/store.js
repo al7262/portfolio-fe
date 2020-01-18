@@ -5,6 +5,7 @@ import swal from 'sweetalert2';
 const initialState = {
   data: '',
   error: '',
+  claims: '',
   baseUrl: 'http://0.0.0.0:5000/',
   isLogin: false,
   isAdmin: false,
@@ -61,6 +62,7 @@ export const actions = (store) => ({
             await store.setState({ isAdmin: true });
           }
           await store.setState({ isLogin: true });
+          await store.setState({ claims: response.data.claims });
         } else {
           await store.setState({ isLogin: false });
         }
@@ -100,31 +102,42 @@ export const actions = (store) => ({
   },
 
   addToCart: async (state, input, qty) => {
-    if(qty>input.stock){
-        qty=input.stock
+    if (qty > input.stock) {
+      qty = input.stock;
     }
     const dict = {
-        data: input,
-        qty: await parseInt(qty)
-    }
+      data: input,
+      qty: await parseInt(qty),
+    };
     let added = false;
-    const cart = localStorage.getItem('cart')===null? [] : JSON.parse(localStorage.getItem('cart'))
-    if(Array.isArray(cart)){
-      cart.forEach(item => {
-        if(item.data!==undefined){
-          if(item.data.id===input.id){
-            item.qty+=qty;
-            if (item.qty>input.stock){
-              item.qty=input.stock
+    const cart = localStorage.getItem('cart') === null ? [] : JSON.parse(localStorage.getItem('cart'));
+    if (Array.isArray(cart)) {
+      cart.forEach((item) => {
+        if (item.data !== undefined) {
+          if (item.data.id === input.id) {
+            item.qty += qty;
+            if (item.qty > input.stock) {
+              item.qty = input.stock;
             }
             added = true;
           }
         }
       });
     }
-    if(!added){
+    if (!added) {
       cart.push(dict);
     }
-    localStorage.setItem('cart', JSON.stringify(cart))
+    localStorage.setItem('cart', JSON.stringify(cart));
+  },
+
+  deleteFromCart: (state, id) =>{
+    const cart = JSON.parse(localStorage.getItem('cart'))
+    let newCart;
+    if(Array.isArray(cart)){
+      newCart = cart.filter((value, index)=>{
+        return index!==id
+      })
+    }
+    localStorage.setItem('cart', JSON.stringify(newCart))
   },
 });
