@@ -75,7 +75,7 @@ class AdminAddEdit extends React.Component{
             headers: {
                 Authorization: "Bearer " + localStorage.getItem('token')
             },
-            url: "http://0.0.0.0:5000/"+value,
+            url: await this.props.baseUrl+value,
             validateStatus: (status) => {
                 return status<500
             }
@@ -179,7 +179,7 @@ class AdminAddEdit extends React.Component{
             headers: {
                 Authorization: "Bearer " + localStorage.getItem('token')
             },
-            url: "http://0.0.0.0:5000/"+url,
+            url: await this.props.baseUrl+url,
             data: data,
             validateStatus: (status) => {
                 return status<500
@@ -212,7 +212,7 @@ class AdminAddEdit extends React.Component{
             headers: {
                 Authorization: "Bearer " + localStorage.getItem('token')
             },
-            url: "http://0.0.0.0:5000/"+url,
+            url: await this.props.baseUrl+url,
             data: data,
             validateStatus: (status) => {
                 return status<500
@@ -298,4 +298,4 @@ class AdminAddEdit extends React.Component{
     }
 }
 
-export default connect('data, categoryList', actions)(withRouter(AdminAddEdit));
+export default connect('data, categoryList, baseUrl', actions)(withRouter(AdminAddEdit));

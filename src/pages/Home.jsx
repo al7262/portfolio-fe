@@ -3,7 +3,12 @@ import { withRouter } from "react-router-dom";
 import { connect } from "unistore/react";
 import { actions } from "../store/store";
 
-import logo from '../images/logo-dark.svg'
+import banner1 from '../images/banner1.png'
+import banner2 from '../images/banner2.png'
+import banner3 from '../images/banner3.png'
+import sidebar1 from '../images/sidebar1.png'
+import sidebar2 from '../images/sidebar2.png'
+import sidebar3 from '../images/sidebar3.png'
 
 import Header from '../components/Header'; 
 import Footer from '../components/Footer'; 
@@ -28,7 +33,7 @@ class Home extends React.Component {
     getNewestProduct = async () =>{
         const input = {
             method: "get",
-            url: "http://0.0.0.0:5000/product/list",
+            url: await this.props.baseUrl+"product/list",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -46,9 +51,10 @@ class Home extends React.Component {
         let productToShow;
         const data = this.props.data
         if(Array.isArray(data)){
-            productToShow = data.map(item=>{
+            productToShow = data.map((item,key)=>{
                 return (
                     <NewestProductList
+                        key={key}
                         title={item.name}
                         image={item.image}
                         id={item.id}
@@ -71,13 +77,13 @@ class Home extends React.Component {
                                 </ol>
                                 <div className="carousel-inner">
                                     <div className="carousel-item active">
-                                        <img className="w-100" src={logo} alt="First slide"/>
+                                        <img className="w-100" src={banner1} alt="First slide"/>
                                     </div>
                                     <div className="carousel-item">
-                                        <img className="w-100" src={logo} alt="Second slide"/>
+                                        <img className="w-100" src={banner2} alt="Second slide"/>
                                     </div>
                                     <div className="carousel-item">
-                                        <img className="w-100" src={logo} alt="Third slide"/>
+                                        <img className="w-100" src={banner3} alt="Third slide"/>
                                     </div>
                                 </div>
                             </div>
@@ -86,14 +92,17 @@ class Home extends React.Component {
                             <div className="row h-100">
                                 <div className="col-lg-12 col-4 mb-lg-3 pr-0 pl-lg-3 pl-0">
                                     <div className="side-promo-inside">
+                                        <img src={sidebar1} alt=""/>
                                     </div>
                                 </div>
                                 <div className="col-lg-12 col-4 mb-lg-3 pr-0">
                                     <div className="side-promo-inside">
+                                        <img src={sidebar2} alt=""/>
                                     </div>
                                 </div>
                                 <div className="col-lg-12 col-4 pr-0">
                                     <div className="side-promo-inside">
+                                        <img src={sidebar3} alt=""/>
                                     </div>
                                 </div>
                             </div>
@@ -122,4 +131,4 @@ class Home extends React.Component {
         )
     }
 }
-export default connect('data', actions)(withRouter(Home));
+export default connect('data, baseUrl', actions)(withRouter(Home));

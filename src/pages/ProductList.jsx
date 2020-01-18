@@ -5,28 +5,25 @@ import { actions } from "../store/store";
 
 import Header from '../components/Header'; 
 import Footer from '../components/Footer'; 
-import CategoryForm from '../components/CategoryForm';
+import ProductItemList from '../components/ProductItemList';
 
 class ProductDetails extends React.Component{
     state = {
         isLoading: true,
         qty: 1,
-        category: ''
+        category: '',
+        search: ''
     }
 
     componentDidMount = async () => {
         await this.props.checkLoginStatus()
         await this.props.getCategory()
-        console.log(this.props)
-        const action = await this.props.match.params.action.toLowerCase()
+        // console.log(this.props)
+        const action = await this.props.match.params.action
         if(action==='category'){
             await this.getItemByCategory()
         } else if(action==='search'){
             await this.getItemBySearch()
-        }
-        const data = this.props.data
-        if(data!==undefined){
-            this.setState({isLoading: false})
         }
     }
 
@@ -37,6 +34,48 @@ class ProductDetails extends React.Component{
 
     handleInput = (event) => {
         this.setState({ [event.target.name] : event.target.value })
+    }
+
+    componentDidUpdate = async () => {
+        // console.warn('this is inside did update')
+        const action = await this.props.match.params.action;
+        // console.log(action)
+        if(action==='search'){
+            const search = await this.props.search
+            if(search!==this.state.search){
+                await this.props.handleChange('data', '')
+                await this.setState({isLoading: true})
+            }
+        } else if(action==='category'){
+            let input = await this.props.match.params.input
+            if(input!==undefined){
+                input = input.replace('+', ' ')
+                if(input!==this.state.category){
+                    await this.props.handleChange('data', '')
+                    await this.setState({isLoading: true})
+                }
+            }
+        }
+    }
+
+    componentWillUpdate = async () =>{
+        // console.warn('this is inside will update')
+        const action = await this.props.match.params.action;
+        // console.log(action)
+        if(action==='search'){
+            const search = await this.props.search
+            if(search!==this.state.search){
+                await this.getItemBySearch();
+            }
+        } else if(action==='category'){
+            let input = await this.props.match.params.input
+            if(input!==undefined){
+                input = input.replace('+', ' ')
+                if(input!==this.state.category){
+                    await this.getItemByCategory()
+                }
+            }
+        }
     }
 
     handleCategory = async (category) => {
@@ -59,44 +98,85 @@ class ProductDetails extends React.Component{
     }
 
     getItemByCategory = async() =>{
-        const category = await this.props.match.params.input.replace('+', ' ')
+        let category = await this.props.match.params.input
+        if(category!==undefined){
+            category=category.replace('+', ' ')
+        }
         this.setState({category:category})
         const categoryId = await this.getCategoryID(category);
-        console.log(categoryId)
+        // console.log(categoryId)
         const input = {
             method: "get",
-            url: "http://0.0.0.0:5000/product/list",
+            url: await this.props.baseUrl+"product/list",
             headers: {
                 "Content-Type": "application/json"
             },
             params: {
                 category_id: categoryId
             },
+            validateStatus: (status) => {
+                return status<500
+            }
         }
         await this.props.handleApi(input)
+        const data = await this.props.data
+        if(data!==undefined){
+            this.setState({isLoading: false})
+        } else if(this.props.error.hasOwnProperties('message')){
+            this.setState({isLoading: false})
+        }
     }
 
     getItemBySearch = async() =>{
         const search = await this.props.search
+        this.setState({search:search})
         const input = {
             method: "get",
-            url: "http://0.0.0.0:5000/product/list",
+            url: await this.props.baseUrl+"product/list",
             headers: {
                 "Content-Type": "application/json"
             },
             params: {
                 name: search
             },
+            validateStatus: (status) => {
+                return status<500
+            }
         }
         await this.props.handleApi(input)
+        const data = await this.props.data
+        if(data!==undefined){
+            this.setState({isLoading: false})
+        } else if(this.props.error.hasOwnProperties('message')){
+            this.setState({isLoading: false})
+        }
     }
 
     render(){
         const data = this.props.data
         const action = this.props.match.params.action
-        let input;
+        let input = this.props.match.params.input
+        let dataToShow;
+        // console.log(this.props)
         if(action==='category'){
-            input = this.props.match.params.input.replace('+', ' ')
+            if(input!==undefined){
+                input = input.replace('+', ' ')
+            }
+        }
+        if(Array.isArray(data)){
+            dataToShow = data.map((item, key)=>{
+                return(
+                    <ProductItemList
+                        key={key}
+                        name={item.name}
+                        price={item.price}
+                        image={item.image}
+                        id={item.id}
+                        data={item}
+                        addToCart={this.props.addToCart}
+                    />
+                )
+            })
         }
         return(
             <React.Fragment>
@@ -107,15 +187,24 @@ class ProductDetails extends React.Component{
                     </div>
                     <hr/>
                     <div className="row">
-                        <div className="col-md-3 side-bar vl-manage mb-2">
-                            <div class="list-group list-group-flush">
+                        <div className="col-md-3 side-bar vl-manage mb-5">
+                            <div className="list-group list-group-flush">
                                 {Array.isArray(this.props.categoryList)?
-                                this.props.categoryList.map((item)=>(
-                                <Link class={"list-group-item list-group-item-action "+(input===item.name.toLowerCase()? 'active':'')}
+                                this.props.categoryList.map((item,key)=>(
+                                <Link key={key} className={"list-group-item list-group-item-action "+(input===item.name.toLowerCase()? 'active':'')}
                                 onClick={()=>this.handleCategory(item.name)}>
                                     {item.name}</Link>
                                 ))
                                 : null
+                                }
+                            </div>
+                        </div>
+                        <div className="col-md-9">
+                            <div className="row">
+                                {this.state.isLoading?
+                                <div className="loading-box"><i className="material-icons">cached</i></div>
+                                :
+                                dataToShow
                                 }
                             </div>
                         </div>
@@ -127,4 +216,4 @@ class ProductDetails extends React.Component{
     }
 }
 
-export default connect('data, categoryList, search',actions)(withRouter(ProductDetails))
+export default connect('data, categoryList, search, error, baseUrl',actions)(withRouter(ProductDetails))

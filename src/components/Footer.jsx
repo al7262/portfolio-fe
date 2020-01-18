@@ -25,9 +25,9 @@ class Footer extends React.Component{
                                 {this.props.categoryList===undefined?
                                 null
                                 :
-                                this.props.categoryList.map((item)=>(
-                                    <li>
-                                        <Link>{item.name}</Link>
+                                this.props.categoryList.map((item,key)=>(
+                                    <li key={key}>
+                                        <Link to={"/item/category/"+item.name.replace(' ','+')}>{item.name}</Link>
                                     </li>
                                 ))
                                 }
@@ -37,7 +37,7 @@ class Footer extends React.Component{
                                 <h3>Our Page</h3>
                                 <ul className="list-unstyled">
                                     <li>
-                                        <Link>Contact Us</Link>
+                                        <Link to="">Contact Us</Link>
                                     </li>
                                 </ul>
                             </div>

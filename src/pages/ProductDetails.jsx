@@ -9,38 +9,53 @@ import Footer from '../components/Footer';
 class ProductDetails extends React.Component{
     state = {
         isLoading: true,
-        qty: 1
+        qty: 1,
+        category: ''
     }
 
     componentDidMount = async () => {
-        this.props.checkLoginStatus()
-        this.props.getCategory();
+        await this.props.checkLoginStatus()
+        await this.props.getCategory();
         const index = this.props.match.params.index
         const input = {
             method: "get",
-            url: "http://0.0.0.0:5000/product/"+index,
+            url: await this.props.baseUrl+"product/"+index,
             headers: {
                 "Content-Type": "application/json"
             }
         }
         await this.props.handleApi(input)
-        const data = this.props.data
+        const data = await this.props.data
         if(data!==undefined){
             this.setState({isLoading: false})
+            await this.setState({category:this.getCategoryName(data.category_id)})
         }
     }
 
     // reset data in store to empty
     componentWillUnmount = async () =>{
         await this.props.handleChange('data', '');
+        await this.setState({category:''})
     }
 
     handleInput = (event) => {
         this.setState({ [event.target.name] : event.target.value })
     }
 
+    getCategoryName = (category_id) => {
+        let category;
+        const categoryList = this.props.categoryList
+        if(Array.isArray(categoryList)){
+            for(const item in categoryList){
+                if(categoryList[item].id===category_id){
+                    category=categoryList[item].name
+                }
+            }
+        }
+        return category
+    }
+
     render(){
-        console.log(this.props)
         const data = this.props.data
         return(
             <React.Fragment>
@@ -51,12 +66,13 @@ class ProductDetails extends React.Component{
                     </div>
                     <hr/>
                     <div className="row product-details-box">
-                        <div className="col-lg-6">
+                        <div className="col-lg-6 mb-5">
                             <img src={data.image} alt=""/>
                         </div>
                         <div className="col-lg-6">
+                            <h6 className="mb-2 font-weight-bold">Category: {this.state.category}</h6>
                             <div className="product-details-description">
-                                <h5>{data.description}</h5>
+                                <p>{data.description}</p>
                             </div>
                             <h2>Rp{data.price}.00</h2>
                             <div className="product-details-cart">
@@ -66,7 +82,7 @@ class ProductDetails extends React.Component{
                                     <span>stock: {data.stock}</span>
                                 </div>
                                 <div className="product-details-button">
-                                    <Link className="btn btn-danger btn-cart" onClick={()=>this.addToCart(data)}>to Cart</Link>
+                                    <Link className="btn btn-danger btn-cart" onClick={()=>this.props.addToCart(data, this.state.qty)}>to Cart</Link>
                                     <Link className="btn btn-danger btn-buy">Buy</Link>
                                 </div>
                             </div>
@@ -80,4 +96,4 @@ class ProductDetails extends React.Component{
     }
 }
 
-export default connect('data',actions)(withRouter(ProductDetails))
+export default connect('data, categoryList, baseUrl',actions)(withRouter(ProductDetails))
