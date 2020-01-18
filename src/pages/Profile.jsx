@@ -37,7 +37,7 @@ class Profile extends React.Component{
             headers: {
                 Authorization: "Bearer " + localStorage.getItem('token')
             },
-            url: "http://0.0.0.0:5000/user"+url,
+            url: await this.props.baseUrl+"user"+url,
             validateStatus: (status) => {
                 return status<500
             }
@@ -45,6 +45,7 @@ class Profile extends React.Component{
         await this.props.handleApi(input);
         const data = this.props.data
         if(data.hasOwnProperty('image')){
+            console.log(data.image)
             if(data.image!==undefined||data.image!==''){
                 this.setState({profilePic:data.image})
             }
@@ -59,7 +60,7 @@ class Profile extends React.Component{
             headers: {
                 Authorization: "Bearer " + localStorage.getItem('token')
             },
-            url: "http://0.0.0.0:5000/user/address/"+value,
+            url: await this.props.baseUrl+"user/address/"+value,
         }
         await this.props.handleApi(input);
         if(this.props.data.hasOwnProperty('message')){
@@ -82,6 +83,7 @@ class Profile extends React.Component{
                 dataToShow = <div className="no-details"><h3>There is no details....<Link to="/user/detail/add">Click here to add</Link></h3></div>
             } else{
                 dataToShow = <ProfileDetail
+                    key={data.id}
                     fname={data.fname}
                     lname={data.lname}
                     gender={data.gender}
@@ -91,7 +93,6 @@ class Profile extends React.Component{
             }
         } else if(position==='address'){
             if(data===undefined||data===''){
-                console.log(data)
                 dataToShow = <div className="no-details"><h3>There is no address....<Link to="/user/address/add">Click here to add</Link></h3></div>
             } else{
                 if(Array.isArray(data)){
@@ -128,14 +129,14 @@ class Profile extends React.Component{
                             <div className="profile-pic order-md-1 order-2">
                                 <img src={this.state.profilePic} alt="user-profile"/>
                             </div>
-                            <div class="list-group list-group-flush order-md-2 order-1 mb-5">
-                                <Link to="#" class={"list-group-item list-group-item-action "+
+                            <div className="list-group list-group-flush order-md-2 order-1 mb-5">
+                                <Link to="#" className={"list-group-item list-group-item-action "+
                                 (this.state.position==='dashboard'? 'active':'')} onClick={()=>this.handlePosition('dashboard')}>
                                     Dashboard</Link>
-                                <Link to="#" class={"list-group-item list-group-item-action "+
+                                <Link to="#" className={"list-group-item list-group-item-action "+
                                 (this.state.position==='address'? 'active':'')} onClick={()=>this.handlePosition('address')}>
                                     Address</Link>
-                                <Link to="#" class={"list-group-item list-group-item-action "+
+                                <Link to="#" className={"list-group-item list-group-item-action "+
                                 (this.state.position==='order'? 'active':'')} onClick={()=>this.handlePosition('order')}>
                                     Order</Link>
                             </div>
@@ -162,4 +163,4 @@ class Profile extends React.Component{
     }
 }
 
-export default connect('data',actions)(withRouter(Profile));
+export default connect('data, baseUrl',actions)(withRouter(Profile));

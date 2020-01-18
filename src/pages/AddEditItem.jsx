@@ -75,7 +75,7 @@ class AdminAddEdit extends React.Component{
             headers: {
                 Authorization: "Bearer " + localStorage.getItem('token')
             },
-            url: "http://0.0.0.0:5000/"+value,
+            url: await this.props.baseUrl+value,
             validateStatus: (status) => {
                 return status<500
             }
@@ -87,7 +87,6 @@ class AdminAddEdit extends React.Component{
         const position = this.props.match.params.option
         const action = this.props.match.params.action
         const warning = document.getElementById('warning')
-        const regNum = new RegExp(/^\d+$/)
         const regPhone = new RegExp(/^[+]\d{9-16}/)
         const regZipCode = new RegExp(/^\d{6}/)
         let data;
@@ -180,7 +179,7 @@ class AdminAddEdit extends React.Component{
             headers: {
                 Authorization: "Bearer " + localStorage.getItem('token')
             },
-            url: "http://0.0.0.0:5000/"+url,
+            url: await this.props.baseUrl+url,
             data: data,
             validateStatus: (status) => {
                 return status<500
@@ -213,7 +212,7 @@ class AdminAddEdit extends React.Component{
             headers: {
                 Authorization: "Bearer " + localStorage.getItem('token')
             },
-            url: "http://0.0.0.0:5000/"+url,
+            url: await this.props.baseUrl+url,
             data: data,
             validateStatus: (status) => {
                 return status<500
@@ -299,4 +298,4 @@ class AdminAddEdit extends React.Component{
     }
 }
 
-export default connect('data, categoryList', actions)(withRouter(AdminAddEdit));
+export default connect('data, categoryList, baseUrl', actions)(withRouter(AdminAddEdit));

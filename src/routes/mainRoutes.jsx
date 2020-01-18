@@ -14,6 +14,7 @@ import Manage from '../pages/Manage';
 import AdminAddEdit from '../pages/AddEditItem';
 import Profile from '../pages/Profile';
 import ProductList from '../pages/ProductList';
+import Cart from '../pages/Cart';
 
 
 const Mainroute = () => {
@@ -24,6 +25,7 @@ const Mainroute = () => {
                     <Route exact path="/" component={Home}/>
                     <Route exact path="/login" component={Login}/>
                     <Route exact path="/register" component={Registration}/>
+                    <Route exact path="/cart" component={Cart}/>
                     <Route exact path="/manage" component={Manage}/>
                     <Route exact path="/manage/:option" component={Manage}/>
                     <Route exact path="/manage/:option/:action" component={AdminAddEdit}/>

@@ -24,7 +24,7 @@ class Registration extends React.Component{
     handleRegistration = async () => {
         const input = {
             method: "post",
-            url: "http://0.0.0.0:5000/user",
+            url: await this.props.baseUrl+"user",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -117,4 +117,4 @@ class Registration extends React.Component{
     }
 }
 
-export default connect("data", actions)(withRouter(Registration))
+export default connect("data, baseUrl", actions)(withRouter(Registration))
