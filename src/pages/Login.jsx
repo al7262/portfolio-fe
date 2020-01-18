@@ -20,7 +20,7 @@ class Login extends React.Component {
     handleLogin = async () => {
         const input = {
             method: "get",
-            url: "http://0.0.0.0:5000/login",
+            url: await this.props.baseUrl+"login",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -81,4 +81,4 @@ class Login extends React.Component {
     }
 }
 
-export default connect("username, password, data", actions)(withRouter(Login))
+export default connect("username, password, data, baseUrl", actions)(withRouter(Login))

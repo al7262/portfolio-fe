@@ -5,6 +5,7 @@ import swal from 'sweetalert2';
 const initialState = {
   data: '',
   error: '',
+  baseUrl: 'http://0.0.0.0:5000/',
   isLogin: false,
   isAdmin: false,
   search: '',
@@ -98,28 +99,29 @@ export const actions = (store) => ({
       });
   },
 
-  addToCart: async (data, qty) => {
-    if(qty>data.stock){
-        qty=data.stock
+  addToCart: async (state, input, qty) => {
+    if(qty>input.stock){
+        qty=input.stock
     }
     const dict = {
-        data: data,
-        qty: await parseInt(this.state.qty)
+        data: input,
+        qty: await parseInt(qty)
     }
     let added = false;
     const cart = localStorage.getItem('cart')===null? [] : JSON.parse(localStorage.getItem('cart'))
     if(Array.isArray(cart)){
       cart.forEach(item => {
-        if(item.data.id===data.id){
-          item.qty+=qty;
-          if (item.qty>data.stock){
-            item.qty=data.stock
+        if(item.data!==undefined){
+          if(item.data.id===input.id){
+            item.qty+=qty;
+            if (item.qty>input.stock){
+              item.qty=input.stock
+            }
+            added = true;
           }
-          added = true;
         }
       });
     }
-    console.log(cart)
     if(!added){
       cart.push(dict);
     }

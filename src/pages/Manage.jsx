@@ -33,7 +33,7 @@ class Manage extends React.Component{
             headers: {
                 Authorization: "Bearer " + localStorage.getItem('token')
             },
-            url: "http://0.0.0.0:5000/"+value+"/list",
+            url: await this.props.baseUrl+value+"/list",
             validateStatus: (status) => {
                 return status<500
             }
@@ -50,7 +50,7 @@ class Manage extends React.Component{
             headers: {
                 Authorization: "Bearer " + localStorage.getItem('token')
             },
-            url: "http://0.0.0.0:5000/"+position+"/"+value
+            url: await this.props.baseUrl+position+"/"+value
         }
         await this.props.handleApi(input);
         if(this.props.data.hasOwnProperty('message')){
@@ -147,4 +147,4 @@ class Manage extends React.Component{
     }
 }
 
-export default connect('isLogin, isAdmin, data', actions)(withRouter(Manage));
+export default connect('isLogin, isAdmin, data, baseUrl', actions)(withRouter(Manage));

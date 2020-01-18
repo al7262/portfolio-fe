@@ -22,7 +22,7 @@ class Header extends React.Component{
                         <input className="form-control w-80" type="search" 
                         placeholder="Search" name="search" value={this.props.search}
                         onChange={e=>this.props.handleInput(e)}/>
-                        <Link className="btn btn-outline-custom pb-0 h-100 w-20" type="submit" to="/item/search">
+                        <Link className="btn btn-outline-custom pb-0 h-100 w-20" type="submit" to={"/item/search?name="+this.props.search}>
                             <i className="material-icons">search</i>
                         </Link>
                     </form>
@@ -32,15 +32,15 @@ class Header extends React.Component{
                             <Link className="nav-link" to="/">Home</Link>
                         </li>
                         <li className={"nav-item dropdown"+(this.props.isCategory? "active" : "")}>
-                            <Link className="nav-link dropdown-toggle"
+                            <Link to="" className="nav-link dropdown-toggle"
                             id="categoryDropdown" data-toggle="dropdown" 
                             aria-haspopup="true" aria-expanded="false">
                                 Category
                             </Link>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="categoryDropdown">
+                            <div className="dropdown-menu dropdown-menu-right" aria-labelledby="categoryDropdown">
                                 {Array.isArray(this.props.categoryList)?
-                                this.props.categoryList.map((item)=>(
-                                    <Link class="dropdown-item" to={"/item/category/"+item.name.replace(' ','+').toLowerCase()}>{item.name}</Link>
+                                this.props.categoryList.map((item, key)=>(
+                                    <Link key={key} className="dropdown-item" to={"/item/category/"+item.name.replace(' ','+').toLowerCase()}>{item.name}</Link>
                                     ))
                                 :
                                 null
@@ -51,32 +51,32 @@ class Header extends React.Component{
                             <Link className="nav-link" to="#">Contact Us</Link>
                         </li>
                         <li className="nav-item">
-                            <Link className="nav-link" to="#">
+                            <Link className="nav-link" to="/cart">
                                 <span className="d-lg-none">Shopping Cart</span>
                                 <i className="material-icons">shopping_cart</i>
                             </Link>
                         </li>
                         <li className="nav-item dropdown">
-                            <Link className="nav-link"
+                            <Link to="" className="nav-link"
                             id="accountDropdown" data-toggle="dropdown" 
                             aria-haspopup="true" aria-expanded="false">
                                 <span className="d-lg-none">Account</span>
                                 <i className="material-icons">account_circle</i>
                             </Link>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="accountDropdown">
+                            <div className="dropdown-menu dropdown-menu-right" aria-labelledby="accountDropdown">
                                 {this.props.isLogin?
                                 <React.Fragment>
                                     {this.props.isAdmin?
-                                    <Link class="dropdown-item" to="/manage">Manage</Link>
+                                    <Link className="dropdown-item" to="/manage">Manage</Link>
                                         :
-                                    <Link class="dropdown-item" to="/user">Profile</Link>
+                                    <Link className="dropdown-item" to="/user">Profile</Link>
                                     }
-                                    <Link class="dropdown-item" to="/" onClick={()=>this.props.handleLogout()}>Logout</Link>
+                                    <Link className="dropdown-item" to="/" onClick={()=>this.props.handleLogout()}>Logout</Link>
                                 </React.Fragment>
                                     :
                                 <React.Fragment>
-                                    <Link class="dropdown-item" to="/login">Login</Link>
-                                    <Link class="dropdown-item" to="/register">Register</Link>
+                                    <Link className="dropdown-item" to="/login">Login</Link>
+                                    <Link className="dropdown-item" to="/register">Register</Link>
                                 </React.Fragment>
                                 }
                             </div>
