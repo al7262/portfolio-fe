@@ -11,21 +11,23 @@ const ProfileDetail = (props) =>{
                 </div>
                 <div className="detail-box">
                     <table>
-                        <tr>
-                            <th>First Name</th><td>:</td><td> {props.fname}</td>
-                        </tr>
-                        <tr>
-                            <th>Last Name</th><td>:</td><td> {props.lname}</td>
-                        </tr>
-                        <tr>
-                            <th>Gender</th><td>:</td><td> {props.gender}</td>
-                        </tr>
-                        <tr>
-                            <th>Birth Date</th><td>:</td><td> {props.birthDate}</td>
-                        </tr>
-                        <tr>
-                            <th>Email</th><td>:</td><td> {props.email}</td>
-                        </tr>
+                        <tbody>
+                            <tr>
+                                <th>First Name</th><td>:</td><td> {props.fname}</td>
+                            </tr>
+                            <tr>
+                                <th>Last Name</th><td>:</td><td> {props.lname}</td>
+                            </tr>
+                            <tr>
+                                <th>Gender</th><td>:</td><td> {props.gender}</td>
+                            </tr>
+                            <tr>
+                                <th>Birth Date</th><td>:</td><td> {props.birthDate}</td>
+                            </tr>
+                            <tr>
+                                <th>Email</th><td>:</td><td> {props.email}</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
