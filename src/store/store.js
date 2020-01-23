@@ -4,13 +4,16 @@ import swal from 'sweetalert2';
 
 const initialState = {
   data: '',
-  error: '',
+  error: undefined,
   claims: '',
   baseUrl: 'http://0.0.0.0:5000/',
   isLogin: false,
   isAdmin: false,
   search: '',
   categoryList: undefined,
+  rajaongkirKey: '8990a11e8949097b46df6762c56a8331',
+  provinceList: undefined,
+  cityList: undefined,
 };
 
 export const store = createStore(initialState);
@@ -34,12 +37,6 @@ export const actions = (store) => ({
           await store.setState({ data: response.data });
         } else {
           await store.setState({ error: response });
-          swal.fire({
-            title: 'Error!',
-            text: response.data.message,
-            icon: 'error',
-            confirmButtonText: 'understood',
-          });
         }
       })
       .catch((error) => {
@@ -53,18 +50,20 @@ export const actions = (store) => ({
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
-      url: 'http://0.0.0.0:5000/login',
+      url: state.baseUrl+'login',
     };
     await axios(input)
       .then(async (response) => {
-        if (response.data.hasOwnProperty('claims')) {
-          if (response.data.claims.admin) {
-            await store.setState({ isAdmin: true });
+        if(response.data!==''||response.data!==undefined){
+          if (response.data.hasOwnProperty('claims')) {
+            if (response.data.claims.admin) {
+              await store.setState({ isAdmin: true });
+            }
+            await store.setState({ isLogin: true });
+            await store.setState({ claims: response.data.claims });
+          } else {
+            await store.setState({ isLogin: false });
           }
-          await store.setState({ isLogin: true });
-          await store.setState({ claims: response.data.claims });
-        } else {
-          await store.setState({ isLogin: false });
         }
       })
       .catch((error) => {
@@ -74,6 +73,7 @@ export const actions = (store) => ({
 
   handleLogout: async () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('cart')
     await store.setState({ isLogin: false });
     await store.setState({ isAdmin: false });
     swal.fire({
@@ -84,17 +84,58 @@ export const actions = (store) => ({
     });
   },
 
-  getCategory: async () => {
+  handleReset: async () => {
+    await store.setState({data:undefined, error:undefined})
+  },
+
+  getCategory: async (state) => {
     const input = {
       method: 'get',
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
-      url: 'http://0.0.0.0:5000/category/list',
+      url: state.baseUrl+'category/list',
     };
     await axios(input)
       .then(async (response) => {
-        await store.setState({ categoryList: response.data });
+        await store.setState({ categoryList: response.data.result });
+      })
+      .catch((error) => {
+        console.warn(error);
+      });
+  },
+
+  getProvince: async(state) => {
+    const input = {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      url: state.baseUrl+'shipment/province',
+    };
+    await axios(input)
+      .then(async (response) => {
+        await store.setState({ provinceList: response.data.result });
+      })
+      .catch((error) => {
+        console.warn(error);
+      });
+  },
+
+  getCity: async(state, id) => {
+    const input = {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      url: state.baseUrl+'shipment/city',
+      params: {
+        province: id
+      }
+    };
+    await axios(input)
+      .then(async (response) => {
+        await store.setState({ cityList: response.data.result });
       })
       .catch((error) => {
         console.warn(error);
@@ -105,10 +146,6 @@ export const actions = (store) => ({
     if (qty > input.stock) {
       qty = input.stock;
     }
-    const dict = {
-      data: input,
-      qty: await parseInt(qty),
-    };
     let added = false;
     const cart = localStorage.getItem('cart') === null ? [] : JSON.parse(localStorage.getItem('cart'));
     if (Array.isArray(cart)) {
@@ -125,6 +162,10 @@ export const actions = (store) => ({
       });
     }
     if (!added) {
+      const dict = {
+        data: input,
+        qty: await parseInt(qty),
+      };
       cart.push(dict);
     }
     localStorage.setItem('cart', JSON.stringify(cart));
@@ -139,5 +180,37 @@ export const actions = (store) => ({
       })
     }
     localStorage.setItem('cart', JSON.stringify(newCart))
+  },
+  
+  updateCart: (state, id, qty)=>{
+    const cart = JSON.parse(localStorage.getItem('cart'));
+    let newCart;
+    if(Array.isArray(cart)){
+      cart.forEach(item => {
+        if(item.data.id===id){
+          item.qty += qty
+          if(item.qty>item.data.stock){
+            item.qty=item.data.stock
+          }
+        }
+      });
+      newCart = cart.filter((item)=>{
+        return item.qty>0
+      })
+    }
+    localStorage.setItem('cart', JSON.stringify(newCart))
+  },
+
+  handleError: async (state) => {
+    if(state.error!==undefined){
+      await swal.fire({
+        title: 'Error!',
+        text: state.error.data.message,
+        icon: 'error',
+        confirmButtonText: 'understood',
+        confirmButtonColor: '#b36232',
+      });
+      await store.setState({error: undefined})
+    }
   },
 });

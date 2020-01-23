@@ -12,7 +12,8 @@ class ProductDetails extends React.Component{
         isLoading: true,
         qty: 1,
         category: '',
-        search: ''
+        search: '',
+        error: false,
     }
 
     componentDidMount = async () => {
@@ -29,59 +30,57 @@ class ProductDetails extends React.Component{
 
     // reset data in store to empty
     componentWillUnmount = async () =>{
-        await this.props.handleChange('data', '');
+        this.props.handleReset()
     }
 
     handleInput = (event) => {
         this.setState({ [event.target.name] : event.target.value })
     }
 
-    componentDidUpdate = async () => {
-        // console.warn('this is inside did update')
+    componentWillUpdate = async () => {
         const action = await this.props.match.params.action;
-        // console.log(action)
         if(action==='search'){
             const search = await this.props.search
             if(search!==this.state.search){
-                await this.props.handleChange('data', '')
-                await this.setState({isLoading: true})
+                await this.setState({isLoading: true, error: false})
             }
         } else if(action==='category'){
             let input = await this.props.match.params.input
             if(input!==undefined){
                 input = input.replace('+', ' ')
                 if(input!==this.state.category){
-                    await this.props.handleChange('data', '')
-                    await this.setState({isLoading: true})
+                    await this.setState({isLoading: true, error: false})
                 }
             }
         }
     }
 
-    componentWillUpdate = async () =>{
-        // console.warn('this is inside will update')
+    componentDidUpdate = async () =>{
         const action = await this.props.match.params.action;
-        // console.log(action)
         if(action==='search'){
             const search = await this.props.search
             if(search!==this.state.search){
+                await this.props.handleReset()
                 await this.getItemBySearch();
+                await this.setState({category: ''})
             }
         } else if(action==='category'){
             let input = await this.props.match.params.input
             if(input!==undefined){
                 input = input.replace('+', ' ')
                 if(input!==this.state.category){
-                    await this.getItemByCategory()
+                    console.log(input, this.state.category)
+                    await this.props.handleReset()
+                    await this.getItemByCategory(input)
+                    await this.props.handleError()
+                    await this.setState({search:''})
                 }
             }
         }
     }
 
     handleCategory = async (category) => {
-        this.setState({category:category.toLowerCase()});
         this.props.history.push('/item/category/'+category.replace(' ','+').toLowerCase())
-        await this.getItemByCategory()
     }
 
     getCategoryID = (category) => {
@@ -98,13 +97,9 @@ class ProductDetails extends React.Component{
     }
 
     getItemByCategory = async() =>{
-        let category = await this.props.match.params.input
-        if(category!==undefined){
-            category=category.replace('+', ' ')
-        }
-        this.setState({category:category})
+        const category = await this.props.match.params.input.replace('+', ' ')
+        await this.setState({category:category})
         const categoryId = await this.getCategoryID(category);
-        // console.log(categoryId)
         const input = {
             method: "get",
             url: await this.props.baseUrl+"product/list",
@@ -121,15 +116,15 @@ class ProductDetails extends React.Component{
         await this.props.handleApi(input)
         const data = await this.props.data
         if(data!==undefined){
-            this.setState({isLoading: false})
-        } else if(this.props.error.hasOwnProperties('message')){
-            this.setState({isLoading: false})
+            await this.setState({isLoading: false, error:false})
+        } else if(this.props.error!==undefined){
+            await this.setState({isLoading: false, error: true})
         }
     }
 
     getItemBySearch = async() =>{
         const search = await this.props.search
-        this.setState({search:search})
+        await this.setState({search:search})
         const input = {
             method: "get",
             url: await this.props.baseUrl+"product/list",
@@ -146,14 +141,17 @@ class ProductDetails extends React.Component{
         await this.props.handleApi(input)
         const data = await this.props.data
         if(data!==undefined){
-            this.setState({isLoading: false})
-        } else if(this.props.error.hasOwnProperties('message')){
-            this.setState({isLoading: false})
+            await this.setState({isLoading: false, error:false})
+        } else if(this.props.error!==undefined){
+            await this.setState({isLoading: false, error: true})
         }
     }
 
     render(){
-        const data = this.props.data
+        let data = this.props.data
+        if(data!==undefined){
+            data = this.props.data.result
+        }
         const action = this.props.match.params.action
         let input = this.props.match.params.input
         let dataToShow;
@@ -177,6 +175,10 @@ class ProductDetails extends React.Component{
                     />
                 )
             })
+        } else if(this.props.error!==undefined){
+            dataToShow = <div className="loading-box"><h3>{this.props.error.data.message}</h3></div>
+        } else if(this.state.error){
+            dataToShow = <div className="loading-box"><h3>No product available</h3></div>
         }
         return(
             <React.Fragment>

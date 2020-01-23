@@ -1,4 +1,5 @@
 import React from 'react';
+import swal from 'sweetalert2';
 import { withRouter, Link } from "react-router-dom";
 import { connect } from "unistore/react";
 import { actions } from "../store/store";
@@ -18,7 +19,11 @@ class Registration extends React.Component{
 
     // reset data in store to empty
     componentWillUnmount = async () =>{
-        await this.props.handleChange('data', '');
+        this.props.handleReset()
+    }
+
+    componentDidUpdate = async()=>{
+        await this.props.handleError()
     }
 
     handleRegistration = async () => {
@@ -32,16 +37,23 @@ class Registration extends React.Component{
                 username: this.state.username.toLowerCase(),
                 password: this.state.password,
                 email: this.state.email
+            },
+            validateStatus: (status) => {
+                return status<500
             }
         };
         await this.props.handleApi(input)
         const data = await this.props.data
         if(data.hasOwnProperty('id')){
             this.props.history.push('/')
-            alert('You have successfully registered')
-        } else {
-            alert('Register unsuccesful, please check your input')
+            swal.fire({
+                title: 'Done!',
+                text: 'You have successfully registered!',
+                icon: 'success',
+                confirmButtonText: 'okay'
+              })
         }
+        this.props.handleError()
     }
 
     validateForm = async () => {

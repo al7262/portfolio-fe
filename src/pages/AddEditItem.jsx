@@ -26,10 +26,19 @@ class AdminAddEdit extends React.Component{
         contact: '',
         details: '',
         city: '',
+        selectedCity: '',
         province: '',
-        country: '',
+        selectedProvince: '',
         zipcode: '',
         editData:undefined
+    }
+
+    componentWillUnmount = async () =>{
+        this.props.handleReset()
+    }
+    
+    componentDidUpdate = async() => {
+        await this.props.handleError()
     }
 
     componentDidMount = async () =>{
@@ -38,6 +47,10 @@ class AdminAddEdit extends React.Component{
         const action = this.props.match.params.action
         if (position==='product'){
             await this.props.getCategory()
+        }
+        if (position==='address'){
+            await this.props.getProvince()
+            console.log(this.props.provinceList)
         }
         if (action==='edit'){
             await this.getItem(position)
@@ -60,7 +73,6 @@ class AdminAddEdit extends React.Component{
                 this.setState({details: data.details})
                 this.setState({city: data.city})
                 this.setState({province: data.province})
-                this.setState({country: data.country})
                 this.setState({zipcode: data.zipcode})
             }
         }
@@ -142,8 +154,6 @@ class AdminAddEdit extends React.Component{
                 warning.innerHTML='Please fill in your address city'
             } else if(this.state.province===''){
                 warning.innerHTML='Please fill in your address province'
-            } else if(this.state.country===''){
-                warning.innerHTML='Please fill in your address country'
             } else if(this.state.zipcode===''){
                 warning.innerHTML='Please fill in your address zipcode'
             } else if(this.state.contact.match(regPhone)){
@@ -156,7 +166,6 @@ class AdminAddEdit extends React.Component{
                     details: this.state.details,
                     city: this.state.city,
                     province: this.state.province,
-                    country: this.state.country,
                     zipcode: this.state.zipcode,
                 }
             }
@@ -165,8 +174,10 @@ class AdminAddEdit extends React.Component{
             if(action==='add'){
                 console.log(data)
                 await this.postItem(data)
+                await this.props.handleError()
             } else if(action==='edit'){
                 await this.updateItem(data)
+                await this.props.handleError()
             }
         }
     }
@@ -234,8 +245,41 @@ class AdminAddEdit extends React.Component{
         }
     }
 
-    handleInput = (event) => {
-        this.setState({ [event.target.name] : event.target.value })
+    handleInput = async (event) => {
+        const name=event.target.name, value=event.target.value;
+        this.setState({ [name] : value})
+        if(name==='province'){
+            await this.getSelectedProvince(value)
+            const provinceId=await this.state.selectedProvince.province_id
+            await this.props.getCity(provinceId)
+        }
+        if(name==='city'){
+            await this.getSelectedCity(value)
+            const zipcode = await this.state.selectedCity.postal_code
+            await this.setState({zipcode: zipcode})
+        }
+    }
+
+    getSelectedProvince = async(name) => {
+        const provinces = await this.props.provinceList
+        let selected; 
+        await provinces.forEach(item=>{
+            if(item.province===name){
+                selected=item
+            }
+        })
+        await this.setState({selectedProvince:selected})
+    }
+
+    getSelectedCity = async(name) => {
+        const cities = await this.props.cityList
+        let selected; 
+        await cities.forEach(item=>{
+            if(item.city_name===name){
+                selected=item
+            }
+        })
+        await this.setState({selectedCity:selected})
     }
 
     render(){
@@ -270,8 +314,9 @@ class AdminAddEdit extends React.Component{
                 details={this.state.details} 
                 city={this.state.city} 
                 province={this.state.province} 
-                country={this.state.country} 
                 zipcode={this.state.zipcode} 
+                provinceList={this.props.provinceList}
+                cityList={this.props.cityList}
                 handleInput={this.handleInput}/>
         }
         
@@ -298,4 +343,4 @@ class AdminAddEdit extends React.Component{
     }
 }
 
-export default connect('data, categoryList, baseUrl', actions)(withRouter(AdminAddEdit));
+export default connect('data, categoryList, baseUrl, provinceList, cityList', actions)(withRouter(AdminAddEdit));

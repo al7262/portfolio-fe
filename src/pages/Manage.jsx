@@ -21,7 +21,11 @@ class Manage extends React.Component{
 
     // reset data in store to empty
     componentWillUnmount = async () =>{
-        await this.props.handleChange('data', '');
+        this.props.handleReset()
+    }
+
+    componentDidUpdate = async()=>{
+        await this.props.handleError()
     }
 
     handlePosition = async (value) => {
@@ -66,7 +70,10 @@ class Manage extends React.Component{
 
     render(){
         let dataToShow;
-        const data = this.props.data;
+        let data = this.props.data;
+        if(data!==undefined){
+            data=data.result
+        }
         if(Array.isArray(data)){
             dataToShow = data.map((item)=>{
                 return(

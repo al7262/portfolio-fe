@@ -24,7 +24,7 @@ class Profile extends React.Component{
 
     // reset data in store to empty
     componentWillUnmount = async () =>{
-        await this.props.handleChange('data', '');
+        this.props.handleReset()
     }
 
     handlePosition = async (value) => {
@@ -77,9 +77,10 @@ class Profile extends React.Component{
     render() {
         let dataToShow;
         const position = this.props.match.params.option;
-        const data = this.props.data;
+        let data = this.props.data;
         if(position==='dashboard'){
-            if(data===undefined){
+            console.log(data)
+            if(data===undefined||data===''){
                 dataToShow = <div className="no-details"><h3>There is no details....<Link to="/user/detail/add">Click here to add</Link></h3></div>
             } else{
                 dataToShow = <ProfileDetail
@@ -89,12 +90,13 @@ class Profile extends React.Component{
                     gender={data.gender}
                     email={data.email}
                     username={data.username}
-                    birthDate={data.birthDate}/>
+                    birthDate={data.birth_date}/>
             }
         } else if(position==='address'){
             if(data===undefined||data===''){
                 dataToShow = <div className="no-details"><h3>There is no address....<Link to="/user/address/add">Click here to add</Link></h3></div>
             } else{
+                data = data.result
                 if(Array.isArray(data)){
                     dataToShow = data.map((item, key)=>{
                         return(
@@ -142,7 +144,9 @@ class Profile extends React.Component{
                             </div>
                         </div>
                         <div className="col-md-9 manage-side">
-                            {dataToShow}
+                            {this.state.isLoading?
+                            <div className="loading-box"><i className="material-icons">cached</i></div>
+                            :dataToShow}
                         </div>
                     </div>
                     <div className="row col-md-12 gap-50">

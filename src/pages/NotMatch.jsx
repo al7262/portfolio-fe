@@ -12,6 +12,14 @@ class NotMatchPage extends React.Component{
         await this.props.getCategory();
     }
 
+    componentWillUnmount = async () =>{
+        this.props.handleReset()
+    }
+
+    componentDidUpdate = async()=>{
+        await this.props.handleError()
+    }
+
     render(){
         return (
             <React.Fragment>

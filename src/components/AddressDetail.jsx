@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const AddressDetail = (props) =>{
     return(
         <React.Fragment>
-            <div className="row address-box">
+            <div className="row address-box mb-3">
                 <div className="col-md-9 address-detail">
                     <h4>Address{props.index+1}</h4>
                     <p>{props.details}, {props.city}</p>

@@ -13,7 +13,11 @@ class Login extends React.Component {
     }
     // reset data in store to empty
     componentWillUnmount = async () =>{
-        await this.props.handleChange('data', '');
+        this.props.handleReset()
+    }
+
+    componentDidUpdate = async()=>{
+        await this.props.handleError()
     }
     
     // to handle click on login button
@@ -32,22 +36,21 @@ class Login extends React.Component {
                 return status<500
             }
         };
-        try {
-            await this.props.handleApi(input)
-        } catch (error) {
-            console.log('just some error', error)            
-        }
+        await this.props.handleApi(input)
+        this.props.handleError()
         const data = await this.props.data
-        if(data.hasOwnProperty('token')){
-            localStorage.setItem('token', this.props.data.token)
-            await this.props.handleChange('isLogin', true)
-            this.props.history.push('/')
-            swal.fire({
-                title: 'Welcome!',
-                text: 'You have successfully logged in!',
-                icon: 'success',
-                confirmButtonText: 'okay'
-              })
+        if(data!==undefined){
+            if(data.hasOwnProperty('token')){
+                localStorage.setItem('token', this.props.data.token)
+                await this.props.handleChange('isLogin', true)
+                this.props.history.push('/')
+                swal.fire({
+                    title: 'Welcome!',
+                    text: 'You have successfully logged in!',
+                    icon: 'success',
+                    confirmButtonText: 'okay'
+                  })
+            }
         }
     }
 

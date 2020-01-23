@@ -27,7 +27,11 @@ class Home extends React.Component {
 
     // reset data in store to empty
     componentWillUnmount = async () =>{
-        await this.props.handleChange('data', '');
+        this.props.handleReset()
+    }
+
+    componentDidUpdate = async()=>{
+        await this.props.handleError()
     }
 
     getNewestProduct = async () =>{
@@ -49,7 +53,10 @@ class Home extends React.Component {
 
     render(){
         let productToShow;
-        const data = this.props.data
+        let data = this.props.data
+        if(data!==undefined){
+            data = data.result
+        }
         if(Array.isArray(data)){
             productToShow = data.map((item,key)=>{
                 return (
@@ -68,7 +75,7 @@ class Home extends React.Component {
                     isHome={true}/>
                 <div className="container mt-lg-5 mt-0">
                     <div className="row">
-                        <div className="col-lg-8 mb-3 pr-0 pl-0">
+                        <div className="col-lg-8 mb-lg-0 mb-3 pr-0 pl-0">
                             <div id="main-carousel" className="carousel slide carousel-fade" data-ride="carousel">
                                 <ol className="carousel-indicators">
                                     <li data-target="#main-carousel" data-slide-to="0" className="active"></li>

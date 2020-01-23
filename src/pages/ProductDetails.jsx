@@ -22,20 +22,27 @@ class ProductDetails extends React.Component{
             url: await this.props.baseUrl+"product/"+index,
             headers: {
                 "Content-Type": "application/json"
+            },
+            validateStatus: (status) => {
+                return status<500
             }
         }
         await this.props.handleApi(input)
         const data = await this.props.data
+        const error = await this.props.error
         if(data!==undefined){
             this.setState({isLoading: false})
             await this.setState({category:this.getCategoryName(data.category_id)})
+        }
+        if (error!==undefined){
+            await this.props.handleError();
+            await this.props.history.push('/')
         }
     }
 
     // reset data in store to empty
     componentWillUnmount = async () =>{
-        await this.props.handleChange('data', '');
-        await this.setState({category:''})
+        await this.props.handleReset()
     }
 
     handleInput = (event) => {
@@ -62,9 +69,16 @@ class ProductDetails extends React.Component{
                 <Header />
                 <div className="container">
                     <div className="row col-12 product-title mt-5">
+                        {this.state.isLoading?
+                        <h1>Trying to find product</h1>
+                        :
                         <h1>{data.name}</h1>
+                        }
                     </div>
                     <hr/>
+                    {this.state.isLoading?
+                    <div className="loading-box"><i className="material-icons">cached</i></div>
+                    :
                     <div className="row product-details-box">
                         <div className="col-lg-6 mb-5">
                             <img src={data.image} alt=""/>
@@ -74,7 +88,7 @@ class ProductDetails extends React.Component{
                             <div className="product-details-description">
                                 <p>{data.description}</p>
                             </div>
-                            <h2>Rp{data.price}.00</h2>
+                            <span>Rp{data.price}.00</span>
                             <div className="product-details-cart">
                                 <div className="product-details-stock">
                                     <span>Quantity: </span>
@@ -88,6 +102,7 @@ class ProductDetails extends React.Component{
                             </div>
                         </div>
                     </div>
+                    }
                     <div className="row col-md-12 gap-100"></div>
                 </div>
                 <Footer />
@@ -96,4 +111,4 @@ class ProductDetails extends React.Component{
     }
 }
 
-export default connect('data, categoryList, baseUrl',actions)(withRouter(ProductDetails))
+export default connect('data, categoryList, baseUrl, error',actions)(withRouter(ProductDetails))
