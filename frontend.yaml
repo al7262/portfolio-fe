@@ -23,3 +23,5 @@ spec:
         image: nginx:1.17.4
         ports:
           - containerPort: 80
+        imagePullSecrets:
+          - name: portfolio-secret
