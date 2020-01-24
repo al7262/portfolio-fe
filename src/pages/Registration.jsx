@@ -50,6 +50,7 @@ class Registration extends React.Component{
                 title: 'Done!',
                 text: 'You have successfully registered!',
                 icon: 'success',
+                timer: 2000,
                 confirmButtonText: 'okay'
               })
         }

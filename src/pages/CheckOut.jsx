@@ -1,4 +1,5 @@
 import React from 'react';
+import swal from 'sweetalert2'
 import { withRouter, Link } from "react-router-dom";
 import { connect } from "unistore/react";
 import { actions } from "../store/store";
@@ -20,6 +21,7 @@ class CheckOut extends React.Component{
         selectedProvince: '',
         zipcode: '',
         address: '',
+        newAddress: '',
         payment: '',
         courier: '',
         shipmentCost: 0,
@@ -67,7 +69,7 @@ class CheckOut extends React.Component{
             await this.getSelectedCity(value)
             const zipcode = await this.state.selectedCity.postal_code
             await this.setState({zipcode: zipcode})
-            await this.setShipmentCost(value)
+            await this.setShipmentCost(this.state.courier)
         }
         if(name==='courier'){
             await this.setShipmentCost(value)
@@ -165,7 +167,7 @@ class CheckOut extends React.Component{
         }
     }
 
-    postOrder = async() =>{
+    postOrder = async(dict) =>{
         const input = {
             method: "post",
             url: await this.props.baseUrl+"order",
@@ -173,13 +175,32 @@ class CheckOut extends React.Component{
                 "Content-Type": "application/json",
                 Authorization: "Bearer " + localStorage.getItem('token')
             },
+            data: dict,
             validateStatus: (status) => {
                 return status<500
             }
         };
         await this.props.handleApi(input)
         const data = await this.props.data
-        await this.setState({order:data.data})
+        await this.setState({order:data.result})
+        this.props.handleReset()
+    }
+
+    postAddress = async (dict) =>{
+        const input = {
+            method: 'Post',
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem('token')
+            },
+            url: await this.props.baseUrl+'user/address',
+            data: dict,
+            validateStatus: (status) => {
+                return status<500
+            }
+        }
+        await this.props.handleApi(input)
+        const data = await this.props.data
+        await this.setState({newAddress:data.id})
         this.props.handleReset()
     }
     
@@ -208,6 +229,110 @@ class CheckOut extends React.Component{
             });
         }
         this.props.handleReset()
+    }
+
+    validateAddress = async () => {
+        const warning1 = document.getElementById('warning1')
+        if(this.state.contact===''){
+            warning1.innerHTML='Please fill in your contact number'
+        } else if(this.state.details===''){
+            warning1.innerHTML='Please fill in your address details'
+        } else if(this.state.city===''){
+            warning1.innerHTML='Please fill in your address city'
+        } else if(this.state.province===''){
+            warning1.innerHTML='Please fill in your address province'
+        } else if(this.state.zipcode===''){
+            warning1.innerHTML='Please fill in your address zipcode'
+        } else {
+            const data = {
+                contact: this.state.contact,
+                details: this.state.details,
+                city: this.state.city,
+                province: this.state.province,
+                zipcode: this.state.zipcode,
+            }
+            await this.postAddress(data);
+        }
+    }
+
+    handleCheckout = async (totPrice, totQty) => {
+        const warning1 = document.getElementById('warning1')
+        const warning2 = document.getElementById('warning2')
+        const warning3 = document.getElementById('warning3')
+        if(this.state.address==='new'){
+            this.validateAddress()
+        }
+        if (this.state.address===''){
+            warning2.innerHTML=""
+            warning3.innerHTML=""
+            warning1.innerHTML="Please choose your address"
+        } else if (this.state.courier===''){
+            warning1.innerHTML=""
+            warning3.innerHTML=""
+            warning2.innerHTML="Please choose your Shipping Method"
+        } else if (this.state.payment===''){
+            warning1.innerHTML=""
+            warning2.innerHTML=""
+            warning3.innerHTML="Please choose your Payment Method"
+        } else {
+            swal.fire({
+                title: 'Confirmed?',
+                text: 'Do you want to proceed with your checkout?',
+                icon: 'question',
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+                confirmButtonColor: '#b36232',
+                cancelButtonColor: '#c6381f',
+                showCancelButton: true
+            }).then(result => {
+                if(result.value){
+                    swal.fire({
+                        title: 'Processing your order....',
+                        timer: 3000,
+                        onBeforeOpen: async () => {
+                            swal.showLoading()
+                            const addressId = await this.state.address==='new'? this.state.newAddress : this.state.address
+                            const data = {
+                                tot_price: totPrice,
+                                tot_qty: totQty,
+                                address_id: addressId,
+                                shipping: await this.state.courier,
+                                payment: await this.state.payment,
+                                shipping_price: await this.state.shipmentCost,
+                                finished: true
+                            }
+                            await this.postOrder(data)
+                            await this.postOrderDetails()
+                        },
+                        onClose: async () => {
+                            let text;
+                            if(this.state.payment==='Transfer'){
+                            text = '<div class="inside-alert">'+
+                                '<h5>You have choosen Transfer for payment</h5>'+
+                                '<h6>Please send Rp'+totPrice+'.00 to the bank account details below</h6>'+
+                                '<h3>9000031601892</h3>'+
+                                '<p>Mandiri a.n. Azzahra Lamuri</p></div>'
+                            } else if(this.state.payment==='Cash-on-Delivery') {
+                            text = '<div class="inside-alert">'+
+                                '<h5>You have choosen Cash-on-Delivery for payment</h5>'+
+                                '<h6>Sit tight and wait until our courier inform you further about your delivery</h6>'+
+                                '<h3>Have a nice day!</h3>'+
+                                '<p>ps: prepare exact amount of money(Rp'+totPrice+'.00)</p></div>'
+                            }
+                            swal.fire({
+                            title: 'Order Processed!',
+                            html: text,
+                            icon: 'info',
+                            confirmButtonText: 'Roger',
+                            confirmButtonColor: '#b36232',
+                            })
+                            localStorage.removeItem('cart')
+                            this.props.history.push('/')
+                        }
+                    })
+                } 
+            })
+        }
     }
 
     render(){
@@ -266,6 +391,7 @@ class CheckOut extends React.Component{
                             <div className="details-checkout">
                                 <div className="address">
                                     <h6 className="font-weight-bold">Input your address:</h6>
+                                    <p id="warning1"></p>
                                     <form onSubmit={e=>e.preventDefault()}>
                                         <select name="address" className="mb-2"
                                         onChange={e=>this.handleInput(e)} value={this.state.address}>
@@ -294,6 +420,7 @@ class CheckOut extends React.Component{
                                 </div>
                                 <div className="address">
                                     <h6 className="font-weight-bold">Select Courier:</h6>
+                                    <p id="warning2"></p>
                                     <form onSubmit={e=>e.preventDefault()}>
                                         <select name="courier" onChange={e=>this.handleInput(e)} value={this.state.courier}>
                                             <option value="" selected disabled>Select Courier</option>
@@ -308,6 +435,7 @@ class CheckOut extends React.Component{
                                 </div>
                                 <div className="address">
                                     <h6 className="font-weight-bold">Select Payment Method:</h6>
+                                    <p id="warning3"></p>
                                     <form onSubmit={e=>e.preventDefault()}>
                                         <select name="payment" onChange={e=>this.handleInput(e)} value={this.state.payment}>
                                             <option value="" selected disabled>Select Payment Method</option>
@@ -322,11 +450,11 @@ class CheckOut extends React.Component{
                                     <h6 className="font-weight-bold text-center">Total Quantity: {totQty}</h6>
                                     <h6 className="font-weight-bold text-center mb-3">Total Payment: Rp{totPrice}.00</h6>
                                     <div className="button-box">
-                                        <Link className="btn btn-danger btn-cancel">
+                                        <Link className="btn btn-danger btn-cancel" onClick={this.handleCancel}>
                                             <i className="material-icons">clear</i>
                                             <span>Cancel</span>
                                         </Link>
-                                        <Link className="btn btn-danger btn-payment">
+                                        <Link className="btn btn-danger btn-payment" onClick={()=>this.handleCheckout(totPrice,totQty)}>
                                             <span>Payment</span>
                                             <i className="material-icons">navigate_next</i>
                                         </Link>
