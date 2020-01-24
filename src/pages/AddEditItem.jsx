@@ -202,7 +202,8 @@ class AdminAddEdit extends React.Component{
                 title: 'Done!',
                 text: 'You have successfully input the item',
                 icon: 'success',
-                confirmButtonText: 'okay'
+                timer: 1000,
+                showConfirmButton: false
               })
             if(position==='category'||position==='product'){
                 this.props.history.push('/manage')
@@ -235,7 +236,8 @@ class AdminAddEdit extends React.Component{
                 title: 'Done!',
                 text: 'You have successfully update the item',
                 icon: 'success',
-                confirmButtonText: 'okay'
+                timer: 1000,
+                showConfirmButton: false
               })
             if(position==='category'||position==='product'){
                 this.props.history.push('/manage')

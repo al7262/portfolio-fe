@@ -29,6 +29,7 @@ class Cart extends React.Component{
                 title: 'Error!',
                 text: 'Please put item into cart first',
                 icon: 'warning',
+                timer: 2000,
                 confirmButtonText: 'okay',
                 confirmButtonColor: '#b36232',
               });
@@ -38,6 +39,7 @@ class Cart extends React.Component{
                 title: 'Error!',
                 text: 'You are an admin, you cannot do checkout',
                 icon: 'error',
+                timer: 2000,
                 confirmButtonText: 'understood',
                 confirmButtonColor: '#b36232',
               });

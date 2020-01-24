@@ -50,12 +50,14 @@ class Header extends React.Component{
                         <li className={this.props.isContact? "nav-item active" : "nav-item"}>
                             <Link className="nav-link" to="#">Contact Us</Link>
                         </li>
+                        {this.props.isAdmin? null :
                         <li className="nav-item">
                             <Link className="nav-link" to="/cart">
                                 <span className="d-lg-none">Shopping Cart</span>
                                 <i className="material-icons">shopping_cart</i>
                             </Link>
                         </li>
+                        }
                         <li className="nav-item dropdown">
                             <Link to="" className="nav-link"
                             id="accountDropdown" data-toggle="dropdown" 

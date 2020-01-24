@@ -97,7 +97,7 @@ class ProductDetails extends React.Component{
                                 </div>
                                 <div className="product-details-button">
                                     <Link className="btn btn-danger btn-cart" onClick={()=>this.props.addToCart(data, this.state.qty)}>to Cart</Link>
-                                    <Link className="btn btn-danger btn-buy">Buy</Link>
+                                    <Link className="btn btn-danger btn-buy"  onClick={()=>this.props.addToCart(data, this.state.qty)} to='/cart'>Buy</Link>
                                 </div>
                             </div>
                         </div>
