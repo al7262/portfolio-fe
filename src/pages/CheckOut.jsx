@@ -284,34 +284,53 @@ class CheckOut extends React.Component{
                 confirmButtonColor: '#b36232',
                 cancelButtonColor: '#c6381f',
                 showCancelButton: true
-              }).then(result => {
-                  if(result.value){
-                      swal.fire({
-                          title: 'Processing your order....',
-                          timer: 2000,
-                          onBeforeOpen: async () => {
-                              swal.showLoading()
-                              const addressId = await this.state.address==='new'? this.state.newAddress : this.state.address
-                              const data = {
-                                  tot_price: totPrice,
-                                  tot_qty: totQty,
-                                  address_id: addressId,
-                                  shipping: await this.state.courier,
-                                  payment: await this.state.payment,
-                                  shipping_price: await this.state.shipmentCost,
-                                  finished: true
-                              }
-                              await this.postOrder(data)
-                              await this.postOrderDetails()
-                          }
-                      })
-                  } else{
-                      swal.fire({
-                          title: 'Directing back....',
-                          timer: 1000,
-                          onBeforeOpen: () => {swal.showLoading()}
-                      })
-                  }
+            }).then(result => {
+                if(result.value){
+                    swal.fire({
+                        title: 'Processing your order....',
+                        timer: 3000,
+                        onBeforeOpen: async () => {
+                            swal.showLoading()
+                            const addressId = await this.state.address==='new'? this.state.newAddress : this.state.address
+                            const data = {
+                                tot_price: totPrice,
+                                tot_qty: totQty,
+                                address_id: addressId,
+                                shipping: await this.state.courier,
+                                payment: await this.state.payment,
+                                shipping_price: await this.state.shipmentCost,
+                                finished: true
+                            }
+                            await this.postOrder(data)
+                            await this.postOrderDetails()
+                        },
+                        onClose: async () => {
+                            let text;
+                            if(this.state.payment==='Transfer'){
+                            text = '<div class="inside-alert">'+
+                                '<h5>You have choosen Transfer for payment</h5>'+
+                                '<h6>Please send Rp'+totPrice+'.00 to the bank account details below</h6>'+
+                                '<h3>9000031601892</h3>'+
+                                '<p>Mandiri a.n. Azzahra Lamuri</p></div>'
+                            } else if(this.state.payment==='Cash-on-Delivery') {
+                            text = '<div class="inside-alert">'+
+                                '<h5>You have choosen Cash-on-Delivery for payment</h5>'+
+                                '<h6>Sit tight and wait until our courier inform you further about your delivery</h6>'+
+                                '<h3>Have a nice day!</h3>'+
+                                '<p>ps: prepare exact amount of money(Rp'+totPrice+'.00)</p></div>'
+                            }
+                            swal.fire({
+                            title: 'Order Processed!',
+                            html: text,
+                            icon: 'info',
+                            confirmButtonText: 'Roger',
+                            confirmButtonColor: '#b36232',
+                            })
+                            localStorage.removeItem('cart')
+                            this.props.history.push('/')
+                        }
+                    })
+                } 
             })
         }
     }

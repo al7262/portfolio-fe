@@ -48,6 +48,7 @@ class Login extends React.Component {
                     title: 'Welcome!',
                     text: 'You have successfully logged in!',
                     icon: 'success',
+                    timer: 3000,
                     confirmButtonText: 'okay'
                   })
             }

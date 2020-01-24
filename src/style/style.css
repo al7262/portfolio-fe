@@ -957,6 +957,13 @@ select:focus {
 .details-checkout .finish-checkout .button-box .btn-cancel:active {
   background-color: #e05839;
 }
+.inside-alert h5 {
+  font-weight: 900;
+  font-size: 16px;
+}
+.inside-alert h6 {
+  font-size: 14px;
+}
 @media (max-width: 1025px) {
   .newest-product-item .newest-product-name {
     height: 20%;

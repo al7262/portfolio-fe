@@ -62,7 +62,8 @@ class Manage extends React.Component{
                 title: 'Done!',
                 text: 'You have successfully delete the item',
                 icon: 'success',
-                confirmButtonText: 'okay'
+                timer: 1000,
+                showConfirmButton: false
               })
         }
         this.handlePosition(this.state.position);
@@ -133,6 +134,25 @@ class Manage extends React.Component{
                                     {dataToShow}
                                 </table>
                             }
+                            {/* <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                    </li>
+                                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                    </li>
+                                </ul>
+                            </nav> */}
                         </div>
                     </div>
                     <div className="row col-md-12 gap-50">

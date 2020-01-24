@@ -68,7 +68,8 @@ class Profile extends React.Component{
                 title: 'Done!',
                 text: 'You have successfully delete address',
                 icon: 'success',
-                confirmButtonText: 'okay'
+                timer: 1000,
+                showConfirmButton: false
               })
         }
         this.handlePosition(this.state.position);
@@ -116,7 +117,7 @@ class Profile extends React.Component{
                 }
             }
         } else if(position==='order'){
-            
+            data = data.result
         }
         return(
             <React.Fragment>

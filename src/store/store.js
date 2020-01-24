@@ -80,6 +80,7 @@ export const actions = (store) => ({
       title: 'Good bye!',
       text: 'You have successfully logged out!',
       icon: 'success',
+      timer: 2000,
       confirmButtonText: 'understood',
     });
   },
@@ -207,6 +208,7 @@ export const actions = (store) => ({
         title: 'Error!',
         text: state.error.data.message,
         icon: 'error',
+        timer: 1500,
         confirmButtonText: 'understood',
         confirmButtonColor: '#b36232',
       });
