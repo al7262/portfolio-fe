@@ -170,6 +170,14 @@ export const actions = (store) => ({
       cart.push(dict);
     }
     localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem('cart', JSON.stringify(cart));
+    await swal.fire({
+      title: 'Added!',
+      text: 'Product successfully added to cart',
+      icon: 'success',
+      timer: 750,
+      showConfirmButton: false,
+    });
   },
 
   deleteFromCart: (state, id) =>{
