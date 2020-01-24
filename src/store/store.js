@@ -6,7 +6,7 @@ const initialState = {
   data: '',
   error: undefined,
   claims: '',
-  baseUrl: 'http://0.0.0.0:5000/',
+  baseUrl: 'https://ancient.my.id/',
   isLogin: false,
   isAdmin: false,
   search: '',
