@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portfolio-frontend
+  namespace: alta5
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: app
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: app
+    spec:
+      containers:
+      - name: app
+        image: nginx:1.17.4
+        ports:
+          - containerPort: 80
+        imagePullSecrets:
+          - name: portfolio-secret
