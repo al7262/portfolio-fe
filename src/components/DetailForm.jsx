@@ -12,7 +12,7 @@ const DetailForm = (props) =>{
                 <option value="others">Others</option>
             </select> 
             <input name="image" type="text" onChange={e => props.handleInput(e)} placeholder="Image Url" value={props.image}/>
-            <input type="date" min="2003-02-01" name="birthDate" onChange={e => props.handleInput(e)} value={props.birthDate}/>
+            <input type="date" max="2003-02-01" name="birthDate" onChange={e => props.handleInput(e)} value={props.birthDate}/>
         </React.Fragment>
     );
 };
