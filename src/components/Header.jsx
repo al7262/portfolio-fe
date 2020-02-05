@@ -29,7 +29,7 @@ class Header extends React.Component{
 
                     <ul className="navbar-nav ml-auto mt-2 mt-lg-0">
                         <li className={this.props.isHome? "nav-item active" : "nav-item"}>
-                            <Link className="nav-link" to="/">Home</Link>
+                            <Link className="nav-link" to="/">Beranda</Link>
                         </li>
                         <li className={"nav-item dropdown"+(this.props.isCategory? "active" : "")}>
                             <Link to="" className="nav-link dropdown-toggle"
